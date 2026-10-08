@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="GitHub Pagesで公開している個人用サイトのランチャー">
+<title>Launcher</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232457d6'/%3E%3Cpath d='M12 9l9 7-9 7z' fill='%23fff'/%3E%3C/svg%3E">
+<script>
+/* 初回描画前にテーマを適用してちらつきを防ぐ */
+try {
+  var p = JSON.parse(localStorage.getItem('launcher.v1') || '{}');
+  if (p && (p.theme === 'light' || p.theme === 'dark')) document.documentElement.dataset.theme = p.theme;
+} catch (e) {}
+</script>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#f4f5f7, #0e1115);
+  --surface: light-dark(#ffffff, #161a20);
+  --surface-hover: light-dark(#f8faff, #1b212a);
+  --border: light-dark(#dde1e7, #262d37);
+  --border-strong: light-dark(#bcc4ce, #3b4552);
+  --text: light-dark(#161a1f, #e8ebef);
+  --muted: light-dark(#59636f, #98a3b0);
+  --accent: light-dark(#2457d6, #7aa7ff);
+  --accent-soft: light-dark(#e6edfc, #1c2a47);
+  --star: light-dark(#d68a00, #f2b84b);
+  --danger: light-dark(#b42318, #ff8a80);
+  --danger-soft: light-dark(#fdeceb, #3a1d1b);
+  --radius: 10px;
+  --header-h: 56px;
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+svg { display: block; }
+.icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: 16px; }
+
+/* ヘッダー */
+.site-header {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.bar { display: flex; align-items: center; gap: 12px; min-height: var(--header-h); padding-block: 8px; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; letter-spacing: .01em; }
+.brand-mark { width: 24px; height: 24px; border-radius: 7px; background: var(--accent); color: #fff; display: grid; place-items: center; }
+.brand-mark .icon { width: 14px; height: 14px; fill: currentColor; stroke: none; }
+.search { position: relative; flex: 1; max-width: 560px; margin-inline: auto; }
+.search .icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search input {
+  width: 100%; height: 36px; padding: 0 44px 0 34px;
+  border: 1px solid var(--border-strong); border-radius: 9px;
+  background: var(--surface); outline: none; -webkit-appearance: none; appearance: none;
+}
+.search input::placeholder { color: var(--muted); }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search input::-webkit-search-cancel-button { cursor: pointer; }
+.search kbd {
+  position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+  min-width: 20px; padding: 0 5px; border: 1px solid var(--border-strong); border-radius: 5px;
+  font: 12px/18px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--muted); text-align: center; pointer-events: none;
+}
+.search input:focus ~ kbd, .search input:not(:placeholder-shown) ~ kbd { display: none; }
+
+.theme { display: inline-flex; padding: 2px; gap: 2px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); }
+.theme button { width: 30px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 7px; background: transparent; color: var(--muted); }
+.theme button:hover { color: var(--text); }
+.theme button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+
+/* セクション */
+main { padding-block: 16px 8px; }
+section { margin-bottom: 20px; }
+.section-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 8px; }
+h2 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+h2 .count { font-weight: 500; font-variant-numeric: tabular-nums; }
+h2 .icon { width: 15px; height: 15px; }
+#fav-section h2 .icon { color: var(--star); fill: currentColor; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font-size: 13px;
+}
+.chip:hover { border-color: var(--border-strong); background: var(--surface-hover); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: light-dark(#fff, #0b1220); }
+.chip .n { font-size: 11px; opacity: .7; font-variant-numeric: tabular-nums; }
+
+/* カード */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.card {
+  position: relative; display: grid; grid-template-columns: 36px 1fr; column-gap: 10px; align-items: start;
+  padding: 10px 12px; min-height: 64px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  transition: border-color .12s, background-color .12s, box-shadow .12s;
+}
+.card:hover, .card:focus-within { border-color: var(--accent); background: var(--surface-hover); }
+.card:hover { box-shadow: 0 2px 10px light-dark(rgb(20 40 90 / .08), rgb(0 0 0 / .35)); }
+.card-link { display: block; font-weight: 600; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: var(--act-w, 30px); }
+.card-link::after { content: ""; position: absolute; inset: -1px; border-radius: var(--radius); }
+.card-link:focus-visible { outline: none; }
+.card-link:focus-visible::after { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tile {
+  grid-row: 1 / span 2; width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center;
+  background: light-dark(hsl(var(--h) 75% 93%), hsl(var(--h) 32% 21%));
+  color: light-dark(hsl(var(--h) 60% 32%), hsl(var(--h) 85% 80%));
+  font-weight: 700; font-size: 16px; line-height: 1; user-select: none;
+}
+.tile .icon { width: 20px; height: 20px; }
+.card-desc { text-wrap: pretty; word-break: auto-phrase; color: var(--muted); font-size: 12.5px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-desc:empty { display: none; }
+.actions { position: absolute; top: 6px; right: 6px; z-index: 1; display: flex; gap: 2px; }
+.card.has-repo { --act-w: 56px; }
+.act {
+  width: 26px; height: 26px; display: grid; place-items: center; padding: 0;
+  border: 0; border-radius: 7px; background: transparent; color: var(--muted);
+}
+.act:hover { background: var(--accent-soft); color: var(--accent); }
+.act .icon { width: 16px; height: 16px; }
+.star[aria-pressed="true"] { color: var(--star); }
+.star[aria-pressed="true"] .icon { fill: currentColor; }
+.star[aria-pressed="false"]:hover { color: var(--star); background: transparent; }
+.card { scroll-margin-top: calc(var(--header-h) + 16px); }
+
+/* 状態表示 */
+.empty { padding: 14px; border: 1px dashed var(--border-strong); border-radius: var(--radius); color: var(--muted); }
+.empty p { margin: 0; }
+.empty .btn { margin-top: 8px; }
+.btn { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.notice { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); font-size: 13px; }
+.notice summary { cursor: pointer; }
+.notice ul { margin: 6px 0 0; padding-left: 20px; color: var(--muted); }
+.error { border-color: var(--danger); background: var(--danger-soft); padding: 14px 16px; }
+.error h2 { color: var(--danger); font-size: 15px; margin-bottom: 6px; }
+.error p { margin: 4px 0; }
+.error code, .notice code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: color-mix(in srgb, var(--text) 8%, transparent); padding: 1px 5px; border-radius: 4px; word-break: break-all; }
+footer { padding-block: 4px 24px; color: var(--muted); font-size: 12px; }
+footer kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; border: 1px solid var(--border-strong); border-radius: 4px; padding: 0 4px; }
+
+@media (max-width: 640px) {
+  .bar { flex-wrap: wrap; row-gap: 8px; }
+  .brand { order: 1; }
+  .theme { order: 2; margin-left: auto; }
+  .search { order: 3; flex-basis: 100%; max-width: none; }
+  .search kbd, footer .kbd-hint { display: none; }
+  .chips { margin-left: 0; flex-basis: 100%; }
+  .grid { grid-template-columns: 1fr; }
+  .search input { font-size: 16px; } /* iOSの自動ズーム防止 */
+}
+@media (pointer: coarse) {
+  .act { width: 34px; height: 34px; }
+  .actions { top: 4px; right: 4px; }
+  .card { --act-w: 38px; }
+  .card.has-repo { --act-w: 74px; }
+  .chip { height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap bar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z"/></svg></span>Launcher</div>
+    <div class="search" role="search">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="サイトを検索" aria-label="サイトを検索（名前・説明）" autocomplete="off" spellcheck="false" enterkeyhint="go">
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+    <div class="theme" role="group" aria-label="テーマ">
+      <button type="button" data-theme-set="system" aria-pressed="false" title="システム設定に合わせる" aria-label="システム設定に合わせる"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button>
+      <button type="button" data-theme-set="light" aria-pressed="false" title="ライト" aria-label="ライト"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg></button>
+      <button type="button" data-theme-set="dark" aria-pressed="false" title="ダーク" aria-label="ダーク"><svg class="icon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <div id="notices"></div>
+  <noscript><p class="notice error">このページの表示にはJavaScriptが必要です。</p></noscript>
+  <section id="fav-section" aria-labelledby="fav-title" hidden>
+    <div class="section-head">
+      <h2 id="fav-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>お気に入り <span class="count" id="fav-count"></span></h2>
+    </div>
+    <div class="grid" id="fav-grid"></div>
+    <div id="fav-empty"></div>
+  </section>
+  <section id="all-section" aria-labelledby="all-title" hidden>
+    <div class="section-head">
+      <h2 id="all-title"><span id="all-label">すべてのサイト</span> <span class="count" id="all-count" aria-live="polite"></span></h2>
+      <div class="chips" id="chips" role="group" aria-label="カテゴリで絞り込み"></div>
+    </div>
+    <div class="grid" id="all-grid"></div>
+    <div id="all-empty"></div>
+  </section>
+  <p id="loading" class="empty" role="status">読み込み中…</p>
+</main>
+
+<footer class="wrap">
+  <span class="kbd-hint"><kbd>/</kbd> 検索 ・ <kbd>Enter</kbd> 先頭を開く ・ <kbd>↓</kbd><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd> カード移動 ・ <kbd>Esc</kbd> 検索を解除</span>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+const STORE_KEY = 'launcher.v1';
+const DATA_URL = 'sites.json';
+const DEFAULT_CATEGORY = 'その他';
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/* 外部サービスに依存しない組み込みアイコン（sites.json の icon に名前を指定） */
+const ICONS = {
+  kanban:   '<rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="10" rx="1"/><rect x="17" y="4" width="4" height="13" rx="1"/>',
+  clock:    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  news:     '<path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/>',
+  book:     '<path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h12"/>',
+  compass:  '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  link:     '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  code:     '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  doc:      '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  chart:    '<path d="M4 20V4M4 20h16M8 16v-5M13 16V8M18 16v-3"/>',
+  tool:     '<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z"/>',
+  folder:   '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  globe:    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
+};
+const GLYPH_STAR = '<path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/>';
+const GLYPH_REPO = '<path d="M9 7 4 12l5 5M15 7l5 5-5 5"/>';
+
+const $ = (id) => document.getElementById(id);
+const els = {
+  q: $('q'), notices: $('notices'), loading: $('loading'),
+  favSection: $('fav-section'), favGrid: $('fav-grid'), favEmpty: $('fav-empty'), favCount: $('fav-count'),
+  allSection: $('all-section'), allGrid: $('all-grid'), allEmpty: $('all-empty'), allCount: $('all-count'),
+  allLabel: $('all-label'), chips: $('chips')
+};
+
+const state = { sites: [], categories: [], favs: new Set(), terms: [], category: null, chipEls: new Map() };
+
+/* ---------- ユーティリティ ---------- */
+
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === false || v == null) continue;
+    el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of children.flat()) if (c != null) el.append(c);   // 文字列は textNode として追加される（HTML注入なし）
+  return el;
+}
+
+function svg(inner, cls = 'icon') {
+  const s = document.createElementNS(SVG_NS, 'svg');
+  s.setAttribute('viewBox', '0 0 24 24');
+  s.setAttribute('class', cls);
+  s.setAttribute('aria-hidden', 'true');
+  s.innerHTML = inner;   // 組み込みの固定文字列のみ（サイト定義の値は渡さない）
+  return s;
+}
+
+const norm = (s) => String(s).normalize('NFKC').toLowerCase();
+
+function hueOf(str) {
+  let x = 0;
+  for (const ch of str) x = (x * 31 + ch.codePointAt(0)) >>> 0;
+  return x % 360;
+}
+
+function safeUrl(value, { githubOnly = false } = {}) {
+  if (typeof value !== 'string') return null;
+  let u;
+  try { u = new URL(value.trim()); } catch { return null; }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
+  if (u.username || u.password) return null;
+  if (githubOnly && !/^(www\.)?github\.com$/i.test(u.hostname)) return null;
+  return u.href;
+}
+
+/* ---------- 個人設定 (localStorage) ---------- */
+
+function loadPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+    return p && typeof p === 'object' && !Array.isArray(p) ? p : {};
+  } catch { return {}; }
+}
+
+let saveWarned = false;
+function savePrefs(patch) {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({ ...loadPrefs(), ...patch }));
+  } catch {
+    if (!saveWarned) {
+      saveWarned = true;
+      addNotice('ブラウザの設定により、お気に入りやテーマを保存できません。この画面を閉じると元に戻ります。');
+    }
+  }
+}
+
+/* ---------- テーマ ---------- */
+
+function applyTheme(mode) {
+  const root = document.documentElement;
+  if (mode === 'light' || mode === 'dark') root.dataset.theme = mode; else delete root.dataset.theme;
+  document.querySelectorAll('[data-theme-set]').forEach((b) =>
+    b.setAttribute('aria-pressed', String(b.dataset.themeSet === (mode === 'light' || mode === 'dark' ? mode : 'system'))));
+}
+
+function initTheme() {
+  applyTheme(loadPrefs().theme);
+  document.querySelectorAll('[data-theme-set]').forEach((b) => b.addEventListener('click', () => {
+    const mode = b.dataset.themeSet;
+    applyTheme(mode);
+    savePrefs({ theme: mode === 'system' ? null : mode });
+  }));
+}
+
+/* ---------- データ読み込み・検証 ---------- */
+
+function addNotice(text, items) {
+  const box = items && items.length
+    ? h('details', { class: 'notice' }, h('summary', {}, text), h('ul', {}, items.map((i) => h('li', {}, i))))
+    : h('p', { class: 'notice' }, text);
+  els.notices.append(box);
+}
+
+function showError(title, detail, hint) {
+  els.loading.hidden = true;
+  els.favSection.hidden = true;
+  els.allSection.hidden = true;
+  els.notices.replaceChildren(h('div', { class: 'notice error', role: 'alert' },
+    h('h2', {}, title),
+    detail ? h('p', {}, h('code', {}, detail)) : null,
+    hint ? h('p', {}, hint) : null));
+}
+
+function validate(data) {
+  const warnings = [];
+  if (!data || typeof data !== 'object' || !Array.isArray(data.sites)) {
+    throw new Error('トップレベルが { "sites": [ ... ] } の形式になっていません。');
+  }
+  const seen = new Set();
+  const sites = [];
+  data.sites.forEach((raw, i) => {
+    const label = `sites[${i}]` + (raw && typeof raw.id === 'string' ? ` (${raw.id})` : '');
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) { warnings.push(`${label}: オブジェクトではありません`); return; }
+    const str = (v) => (typeof v === 'string' ? v.trim() : '');
+    const id = str(raw.id), name = str(raw.name);
+    if (!id) { warnings.push(`${label}: id がありません`); return; }
+    if (seen.has(id)) { warnings.push(`${label}: id が重複しています`); return; }
+    if (!name) { warnings.push(`${label}: name がありません`); return; }
+    const url = safeUrl(raw.url);
+    if (!url) { warnings.push(`${label}: url が正しい http(s) URL ではありません`); return; }
+    let repo = null;
+    if (raw.repo != null && raw.repo !== '') {
+      repo = safeUrl(raw.repo, { githubOnly: true });
+      if (!repo) warnings.push(`${label}: repo が GitHub の URL ではないため、リンクを表示しません`);
+    }
+    seen.add(id);
+    sites.push({
+      id, name, url, repo,
+      description: str(raw.description),
+      category: str(raw.category) || DEFAULT_CATEGORY,
+      icon: str(raw.icon),
+      favorite: raw.favorite === true,
+      hay: norm(name + ' ' + str(raw.description))
+    });
+  });
+  if (!sites.length) throw new Error('表示できるサイト定義がありません。' + (warnings.length ? ' ' + warnings.join(' / ') : ''));
+  return { sites, warnings };
+}
+
+async function load() {
+  let res;
+  try {
+    res = await fetch(DATA_URL, { cache: 'no-cache' });
+  } catch (e) {
+    const local = location.protocol === 'file:';
+    return showError('sites.json を取得できませんでした', String(e && e.message || e),
+      local ? 'ファイルを直接開くと読み込めません。ローカルサーバー（例: python3 -m http.server）経由で開いてください。'
+            : 'ネットワーク接続、または公開状態を確認してください。');
+  }
+  if (!res.ok) {
+    return showError(`sites.json を取得できませんでした（HTTP ${res.status}）`, `${new URL(DATA_URL, location.href).href}`,
+      res.status === 404 ? 'index.html と同じ場所に sites.json が公開されているか確認してください。' : 'しばらくしてから再読み込みしてください。');
+  }
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    return showError('sites.json の JSON 構文が正しくありません', String(e && e.message || e),
+      'カンマ・引用符・括弧の過不足を確認してください。');
+  }
+  let result;
+  try {
+    result = validate(data);
+  } catch (e) {
+    return showError('sites.json の内容が正しくありません', String(e.message), '仕様は README.md を参照してください。');
+  }
+  start(result.sites, result.warnings);
+}
+
+/* ---------- 描画 ---------- */
+
+function start(sites, warnings) {
+  state.sites = sites;
+  state.categories = [...new Set(sites.map((s) => s.category))];
+  const saved = loadPrefs().favorites;
+  const initial = Array.isArray(saved) ? saved.filter((x) => typeof x === 'string') : sites.filter((s) => s.favorite).map((s) => s.id);
+  state.favs = new Set(initial);
+  if (warnings.length) addNotice(`${warnings.length}件のサイト定義に問題があります（該当部分を読み飛ばしました）`, warnings);
+  buildChips();
+  els.loading.hidden = true;
+  els.favSection.hidden = false;
+  els.allSection.hidden = false;
+  render();
+  if (els.q.value) onQuery();   // ブラウザが復元した入力値を反映
+}
+
+function buildChips() {
+  els.chips.replaceChildren();
+  state.chipEls.clear();
+  const make = (value, label) => {
+    const n = h('span', { class: 'n' });
+    const b = h('button', { type: 'button', class: 'chip', 'aria-pressed': 'false' }, label, n);
+    b.addEventListener('click', () => { state.category = value; render(); });
+    state.chipEls.set(value, { b, n });
+    els.chips.append(b);
+  };
+  make(null, 'すべて');
+  state.categories.forEach((c) => make(c, c));
+}
+
+function matches(site) {
+  return state.terms.every((t) => site.hay.includes(t));
+}
+
+function card(site, section) {
+  const fav = state.favs.has(site.id);
+  const tile = h('span', { class: 'tile', style: `--h:${hueOf(site.id)}` });
+  if (ICONS[site.icon]) tile.append(svg(ICONS[site.icon]));
+  else tile.append(Array.from(site.icon || site.name).slice(0, 2).join(''));
+
+  const link = h('a', { class: 'card-link', href: site.url, target: '_blank', rel: 'noopener noreferrer', title: site.name }, site.name);
+
+  const star = h('button', { type: 'button', class: 'act star', 'aria-pressed': String(fav),
+    'aria-label': `${site.name}をお気に入り`, title: fav ? 'お気に入りを解除' : 'お気に入りに追加' }, svg(GLYPH_STAR));
+  star.addEventListener('click', () => toggleFav(site.id, section));
+
+  const actions = h('div', { class: 'actions' });
+  if (site.repo) {
+    actions.append(h('a', { class: 'act', href: site.repo, target: '_blank', rel: 'noopener noreferrer',
+      'aria-label': `${site.name}のGitHubリポジトリを開く`, title: 'GitHubリポジトリ' }, svg(GLYPH_REPO)));
+  }
+  actions.append(star);
+
+  return h('article', { class: 'card' + (site.repo ? ' has-repo' : ''), 'data-id': site.id, 'data-section': section },
+    tile, link, h('span', { class: 'card-desc', title: site.description }, site.description), actions);
+}
+
+function emptyBox(msg, button) {
+  const box = h('div', { class: 'empty' }, h('p', {}, msg));
+  if (button) {
+    const b = h('button', { type: 'button', class: 'btn' }, button.label);
+    b.addEventListener('click', button.onClick);
+    box.append(b);
+  }
+  return box;
+}
+
+function render() {
+  const searching = state.terms.length > 0;
+  const query = els.q.value.trim();
+
+  /* お気に入り */
+  els.favSection.hidden = searching;
+  if (!searching) {
+    const favs = state.sites.filter((s) => state.favs.has(s.id));
+    els.favGrid.replaceChildren(...favs.map((s) => card(s, 'fav')));
+    els.favCount.textContent = favs.length ? `${favs.length}` : '';
+    els.favEmpty.replaceChildren(favs.length ? '' : emptyBox('お気に入りはまだありません。カード右上の ☆ から登録できます。'));
+  }
+
+  /* カテゴリ（件数は検索語に連動） */
+  const base = state.sites.filter(matches);
+  for (const [value, { b, n }] of state.chipEls) {
+    const c = value == null ? base.length : base.filter((s) => s.category === value).length;
+    n.textContent = c;
+    b.setAttribute('aria-pressed', String(state.category === value));
+  }
+
+  /* 全サイト／検索結果 */
+  const list = base.filter((s) => state.category == null || s.category === state.category);
+  els.allLabel.textContent = searching ? '検索結果' : (state.category ?? 'すべてのサイト');
+  els.allCount.textContent = `${list.length}件`;
+  els.allGrid.replaceChildren(...list.map((s) => card(s, 'all')));
+  if (list.length) {
+    els.allEmpty.replaceChildren();
+  } else if (searching && state.category != null && base.length) {
+    els.allEmpty.replaceChildren(emptyBox(`カテゴリ「${state.category}」に「${query}」に一致するサイトはありません（他のカテゴリに${base.length}件あります）。`,
+      { label: 'すべてのカテゴリで表示', onClick: () => { state.category = null; render(); } }));
+  } else if (searching) {
+    els.allEmpty.replaceChildren(emptyBox(`「${query}」に一致するサイトはありません。サイト名や説明文の別のキーワードをお試しください。`,
+      { label: '検索を解除', onClick: () => { clearQuery(); els.q.focus(); } }));
+  } else {
+    els.allEmpty.replaceChildren(emptyBox('このカテゴリに表示できるサイトはありません。'));
+  }
+}
+
+function toggleFav(id, section) {
+  if (state.favs.has(id)) state.favs.delete(id); else state.favs.add(id);
+  savePrefs({ favorites: [...state.favs] });
+  render();
+  const pick = (sec) => document.querySelector(`.card[data-section="${sec}"][data-id="${CSS.escape(id)}"] .star`);
+  (pick(section) || pick('all') || document.querySelector('.card .star') || els.q).focus();
+}
+
+/* ---------- 検索・キーボード ---------- */
+
+function onQuery() {
+  state.terms = norm(els.q.value).split(/\s+/).filter(Boolean);
+  render();
+}
+
+function clearQuery() {
+  els.q.value = '';
+  onQuery();
+}
+
+function openFirst() {
+  const first = els.allGrid.querySelector('.card-link');
+  if (first) window.open(first.href, '_blank', 'noopener,noreferrer');
+}
+
+function neighbour(from, key) {
+  const links = [...document.querySelectorAll('.card-link')].filter((el) => el.getClientRects().length);   // 非表示セクションのカードは除外
+  const r = from.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  let best = null, bestScore = Infinity;
+  for (const el of links) {
+    if (el === from) continue;
+    const b = el.getBoundingClientRect();
+    const dx = b.left + b.width / 2 - cx, dy = b.top + b.height / 2 - cy;
+    let ok, score;
+    if (key === 'ArrowRight')     { ok = dx > 4 && Math.abs(dy) < r.height / 2; score = dx; }
+    else if (key === 'ArrowLeft') { ok = dx < -4 && Math.abs(dy) < r.height / 2; score = -dx; }
+    else if (key === 'ArrowDown') { ok = dy > r.height / 2; score = dy * 4 + Math.abs(dx); }
+    else                          { ok = dy < -r.height / 2; score = -dy * 4 + Math.abs(dx); }
+    if (ok && score < bestScore) { best = el; bestScore = score; }
+  }
+  if (!best && (key === 'ArrowRight' || key === 'ArrowLeft')) {
+    best = links[links.indexOf(from) + (key === 'ArrowRight' ? 1 : -1)] || null;
+  }
+  return best;
+}
+
+function initKeys() {
+  els.q.addEventListener('input', onQuery);
+  els.q.addEventListener('keydown', (e) => {
+    if (e.isComposing) return;   // IME変換中のEnter/Escは対象外
+    if (e.key === 'Enter') { e.preventDefault(); openFirst(); }
+    else if (e.key === 'Escape') { if (els.q.value) clearQuery(); else els.q.blur(); }
+    else if (e.key === 'ArrowDown') {
+      const first = (state.terms.length ? els.allGrid : els.favGrid.firstElementChild ? els.favGrid : els.allGrid).querySelector('.card-link');
+      if (first) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const t = e.target;
+    const typing = t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+    if (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      els.q.focus(); els.q.select();
+      return;
+    }
+    if (e.key === 'Escape' && !typing && els.q.value) { clearQuery(); return; }
+    if (t instanceof HTMLElement && t.classList.contains('card-link') && e.key.startsWith('Arrow') && !e.altKey && !e.ctrlKey && !e.metaKey) {
+      const next = neighbour(t, e.key);
+      if (next) { e.preventDefault(); next.focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); els.q.focus(); }
+    }
+  });
+}
+
+initTheme();
+initKeys();
+load();
+})();
+</script>
+</body>
+</html>
