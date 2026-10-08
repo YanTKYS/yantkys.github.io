@@ -551,7 +551,7 @@ function openFirst() {
 }
 
 function neighbour(from, key) {
-  const links = [...document.querySelectorAll('.card-link')];
+  const links = [...document.querySelectorAll('.card-link')].filter((el) => el.getClientRects().length);   // 非表示セクションのカードは除外
   const r = from.getBoundingClientRect();
   const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
   let best = null, bestScore = Infinity;
