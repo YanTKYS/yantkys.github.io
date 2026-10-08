@@ -21,6 +21,26 @@
       "favorite": true
     },
     {
+      "id": "fusen",
+      "name": "iFusen",
+      "description": "自由配置のホワイトボード付箋。手書きにも対応",
+      "url": "https://yantkys.github.io/fusen/",
+      "repo": "https://github.com/YanTKYS/fusen",
+      "category": "タスク・記録",
+      "icon": "doc",
+      "favorite": false
+    },
+    {
+      "id": "clock",
+      "name": "iClock",
+      "description": "ローカル動作の時計・タイマー・予定時刻表示",
+      "url": "https://yantkys.github.io/clock/",
+      "repo": "https://github.com/YanTKYS/clock",
+      "category": "タスク・記録",
+      "icon": "clock",
+      "favorite": false
+    },
+    {
       "id": "news-watch",
       "name": "news-watch",
       "description": "自治体DX・生成AI活用の新着情報ログ",
@@ -48,6 +68,66 @@
       "repo": "https://github.com/YanTKYS/lg_toolkit_guide",
       "category": "ナレッジ",
       "icon": "compass",
+      "favorite": false
+    },
+    {
+      "id": "lgpwmng",
+      "name": "lgpwmng",
+      "description": "自治体向けログイン補助拡張の資料・デモ",
+      "url": "https://yantkys.github.io/lgpwmng/",
+      "repo": "https://github.com/YanTKYS/lgpwmng",
+      "category": "ナレッジ",
+      "icon": "link",
+      "favorite": false
+    },
+    {
+      "id": "signage",
+      "name": "iSignage",
+      "description": "サイネージの作成・全画面再生ツール",
+      "url": "https://yantkys.github.io/signage/",
+      "repo": "https://github.com/YanTKYS/signage",
+      "category": "ツール",
+      "icon": "chart",
+      "favorite": false
+    },
+    {
+      "id": "proxypac",
+      "name": "iProxypac",
+      "description": "proxy.pacの管理・生成・テストツール",
+      "url": "https://yantkys.github.io/proxypac/",
+      "repo": "https://github.com/YanTKYS/proxypac",
+      "category": "ツール",
+      "icon": "globe",
+      "favorite": false
+    },
+    {
+      "id": "idontlovepdf",
+      "name": "idontlovepdf",
+      "description": "PDFの文字を検索して置換する編集ツール",
+      "url": "https://yantkys.github.io/idontlovepdf/",
+      "repo": "https://github.com/YanTKYS/idontlovepdf",
+      "category": "ツール",
+      "icon": "doc",
+      "favorite": false
+    },
+    {
+      "id": "idontlovepdf-engine",
+      "name": "idontlovepdf-engine",
+      "description": "PDF本文置換エンジンの検証コンソール",
+      "url": "https://yantkys.github.io/idontlovepdf-engine/",
+      "repo": "https://github.com/YanTKYS/idontlovepdf-engine",
+      "category": "ツール",
+      "icon": "tool",
+      "favorite": false
+    },
+    {
+      "id": "markdownutil",
+      "name": "MarkdownUtil",
+      "description": "文書をMarkdownへ変換・編集・プレビュー",
+      "url": "https://yantkys.github.io/markdownutil/",
+      "repo": "https://github.com/YanTKYS/markdownutil",
+      "category": "ツール",
+      "icon": "code",
       "favorite": false
     }
   ]
