@@ -1,0 +1,54 @@
+{
+  "sites": [
+    {
+      "id": "kanban",
+      "name": "iKanban",
+      "description": "個人用の4列Kanbanボード。JSONバックアップ対応",
+      "url": "https://yantkys.github.io/kanban/",
+      "repo": "https://github.com/YanTKYS/kanban",
+      "category": "タスク・記録",
+      "icon": "kanban",
+      "favorite": true
+    },
+    {
+      "id": "since",
+      "name": "iSince",
+      "description": "「前回いつ？」と経過日数の記録ツール",
+      "url": "https://yantkys.github.io/since/",
+      "repo": "https://github.com/YanTKYS/since",
+      "category": "タスク・記録",
+      "icon": "clock",
+      "favorite": true
+    },
+    {
+      "id": "news-watch",
+      "name": "news-watch",
+      "description": "自治体DX・生成AI活用の新着情報ログ",
+      "url": "https://yantkys.github.io/news-watch/",
+      "repo": "https://github.com/YanTKYS/news-watch",
+      "category": "情報収集",
+      "icon": "news",
+      "favorite": true
+    },
+    {
+      "id": "markdown-library",
+      "name": "Markdown Library",
+      "description": "庁内向けMarkdownナレッジの検索・コピー",
+      "url": "https://yantkys.github.io/markdown-library/",
+      "repo": "https://github.com/YanTKYS/markdown-library",
+      "category": "ナレッジ",
+      "icon": "book",
+      "favorite": false
+    },
+    {
+      "id": "lg-toolkit-guide",
+      "name": "lg_toolkit_guide",
+      "description": "庁内・閉域向けツールの開発ガイド集",
+      "url": "https://yantkys.github.io/lg_toolkit_guide/",
+      "repo": "https://github.com/YanTKYS/lg_toolkit_guide",
+      "category": "ナレッジ",
+      "icon": "compass",
+      "favorite": false
+    }
+  ]
+}
