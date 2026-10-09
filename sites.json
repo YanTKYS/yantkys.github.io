@@ -129,6 +129,16 @@
       "category": "ツール",
       "icon": "code",
       "favorite": false
+    },
+    {
+      "id": "drawio-poc",
+      "name": "drawio-poc",
+      "description": "閉域向けに構成した公式draw.ioの図作成ツール",
+      "url": "https://yantkys.github.io/drawio-poc/",
+      "repo": "https://github.com/YanTKYS/drawio-poc",
+      "category": "ツール",
+      "icon": "chart",
+      "favorite": false
     }
   ]
 }
