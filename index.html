@@ -678,7 +678,8 @@ function initKeys() {
       if (first) window.open(first.href, '_blank', 'noopener,noreferrer');
     } else if (e.key === 'Escape') { if (els.rq.value) clearRepoQuery(); else els.rq.blur(); }
     else if (e.key === 'ArrowDown') {
-      const first = $('panel-repos').querySelector('.card-link');
+      // 検索中は検索結果（全リポジトリ）の先頭へ、通常時は画面順で先頭（代表作品）へ
+      const first = (rstate.terms.length ? els.repoGrid : $('panel-repos')).querySelector('.card-link');
       if (first) { e.preventDefault(); first.focus(); }
     }
   });

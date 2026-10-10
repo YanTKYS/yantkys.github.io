@@ -18,6 +18,7 @@ const args = Object.fromEntries(process.argv.slice(2).flatMap((a, i, all) =>
 const OWNER = args.owner || process.env.REPO_OWNER || 'YanTKYS';
 const OUT = args.out || 'repositories.json';
 const API = (process.env.GITHUB_API_URL || 'https://api.github.com').replace(/\/$/, '');
+const API_ORIGIN = new URL(API).origin;
 const PER_PAGE = 100;
 
 async function request(url, { retries = 2 } = {}) {
@@ -26,7 +27,8 @@ async function request(url, { retries = 2 } = {}) {
     'X-GitHub-Api-Version': '2022-11-28',
     'User-Agent': 'portfolio-data-generator'
   };
-  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  // 認証情報は GitHub API のオリジンにだけ付与する（フォールバック先の Pages など別ホストには送らない）
+  if (process.env.GITHUB_TOKEN && new URL(url).origin === API_ORIGIN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   for (let attempt = 0; ; attempt++) {
     try {
       const res = await fetch(url, { headers, signal: AbortSignal.timeout(30_000) });
