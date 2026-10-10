@@ -1,0 +1,69 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 18 * * *'   # 毎日 03:17 JST
+  workflow_dispatch:
+  pull_request:             # ビルドとデータ検証のみ（デプロイしない）
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp index.html sites.json featured.json _site/
+
+      # 公開リポジトリ一覧を取得して repositories.json を生成する。
+      # 取得に失敗するとジョブが失敗し、公開中のサイトはそのまま維持される。
+      # push のときだけ、公開中の repositories.json を検証して再利用する
+      # （API 障害中でも index.html などの変更を反映できるようにするため）。
+      - name: Generate repositories.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          FALLBACK_URL: https://${{ github.repository_owner }}.github.io/repositories.json
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            node scripts/fetch-repos.mjs --out _site/repositories.json --fallback-url "$FALLBACK_URL"
+          else
+            node scripts/fetch-repos.mjs --out _site/repositories.json
+          fi
+
+      - name: Validate data files
+        run: node scripts/check-data.mjs _site
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

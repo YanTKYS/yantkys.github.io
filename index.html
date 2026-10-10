@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="GitHub Pagesで公開している個人用サイトのランチャー">
+<meta name="description" content="GitHub Pagesで公開している個人用サイトのランチャーと、GitHubリポジトリのポートフォリオ">
 <title>Launcher</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232457d6'/%3E%3Cpath d='M12 9l9 7-9 7z' fill='%23fff'/%3E%3C/svg%3E">
 <script>
@@ -85,6 +85,14 @@ svg { display: block; }
 .theme button:hover { color: var(--text); }
 .theme button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
 
+/* タブ */
+.tabs { display: inline-flex; padding: 2px; gap: 2px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); }
+.tabs button {
+  height: 30px; padding: 0 14px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-weight: 600; white-space: nowrap;
+}
+.tabs button:hover { color: var(--text); }
+.tabs button[aria-selected="true"] { background: var(--accent); color: light-dark(#fff, #0b1220); }
+
 /* セクション */
 main { padding-block: 16px 8px; }
 section { margin-bottom: 20px; }
@@ -139,6 +147,36 @@ h2 .icon { width: 15px; height: 15px; }
 .star[aria-pressed="false"]:hover { color: var(--star); background: transparent; }
 .card { scroll-margin-top: calc(var(--header-h) + 16px); }
 
+/* リポジトリ */
+.panel[hidden] { display: none; }
+.stamp { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+#feat-section h2 { color: var(--accent); }
+#feat-section h2 .icon { fill: currentColor; stroke: none; }
+.feat-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.card.featured {
+  display: flex; flex-direction: column; gap: 8px; padding: 14px; min-height: 132px;
+  border-top: 3px solid var(--accent);
+}
+.f-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.f-title { margin: 0; font-size: 15px; line-height: 20px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card.featured .card-desc { -webkit-line-clamp: 3; line-clamp: 3; font-size: 13px; }
+.card-foot { margin-top: auto; padding-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.pills { margin-left: auto; display: flex; gap: 6px; }
+.pill {
+  position: relative; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px;
+  border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); font-size: 13px; font-weight: 600; white-space: nowrap;
+}
+.pill .icon { width: 14px; height: 14px; }
+.pill:hover { border-color: var(--accent); color: var(--accent); }
+.pill.card-link { position: static; display: inline-flex; padding-right: 10px; overflow: visible; text-overflow: clip; }
+.pill.pages { z-index: 1; }
+.repo-meta { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.card.repo .tile { grid-row: 1 / span 3; }
+.meta { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lang::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: hsl(var(--h) 65% 50%); }
+.badge { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border: 1px solid var(--border-strong); border-radius: 999px; font-size: 11px; line-height: 1; color: var(--muted); }
+.badge.archived { border-color: var(--star); color: var(--star); }
+
 /* 状態表示 */
 .empty { padding: 14px; border: 1px dashed var(--border-strong); border-radius: var(--radius); color: var(--muted); }
 .empty p { margin: 0; }
@@ -155,14 +193,18 @@ h2 .icon { width: 15px; height: 15px; }
 footer { padding-block: 4px 24px; color: var(--muted); font-size: 12px; }
 footer kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; border: 1px solid var(--border-strong); border-radius: 4px; padding: 0 4px; }
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   .bar { flex-wrap: wrap; row-gap: 8px; }
   .brand { order: 1; }
   .theme { order: 2; margin-left: auto; }
-  .search { order: 3; flex-basis: 100%; max-width: none; }
+  .tabs { order: 3; flex-basis: 100%; }
+  .tabs button { flex: 1; }
+  .search { order: 4; flex-basis: 100%; max-width: none; }
+}
+@media (max-width: 640px) {
   .search kbd, footer .kbd-hint { display: none; }
   .chips { margin-left: 0; flex-basis: 100%; }
-  .grid { grid-template-columns: 1fr; }
+  .grid, .feat-grid { grid-template-columns: 1fr; }
   .search input { font-size: 16px; } /* iOSの自動ズーム防止 */
 }
 @media (pointer: coarse) {
@@ -171,6 +213,8 @@ footer kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospa
   .card { --act-w: 38px; }
   .card.has-repo { --act-w: 74px; }
   .chip { height: 34px; }
+  .tabs button { height: 36px; }
+  .pill { height: 34px; }
 }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 </style>
@@ -179,9 +223,18 @@ footer kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospa
 <header class="site-header">
   <div class="wrap bar">
     <div class="brand"><span class="brand-mark" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z"/></svg></span>Launcher</div>
-    <div class="search" role="search">
+    <div class="tabs" role="tablist" aria-label="表示の切り替え">
+      <button type="button" role="tab" id="tab-sites" aria-controls="panel-sites" aria-selected="true">Webサイト</button>
+      <button type="button" role="tab" id="tab-repos" aria-controls="panel-repos" aria-selected="false" tabindex="-1">リポジトリ</button>
+    </div>
+    <div class="search" id="search-sites" role="search">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="サイトを検索" aria-label="サイトを検索（名前・説明）" autocomplete="off" spellcheck="false" enterkeyhint="go">
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+    <div class="search" id="search-repos" role="search" hidden>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="rq" type="search" placeholder="リポジトリを検索" aria-label="リポジトリを検索（名前・説明）" autocomplete="off" spellcheck="false" enterkeyhint="go">
       <kbd aria-hidden="true">/</kbd>
     </div>
     <div class="theme" role="group" aria-label="テーマ">
@@ -193,8 +246,9 @@ footer kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospa
 </header>
 
 <main class="wrap" id="main">
+<noscript><p class="notice error">このページの表示にはJavaScriptが必要です。</p></noscript>
+<div class="panel" id="panel-sites" role="tabpanel" aria-labelledby="tab-sites">
   <div id="notices"></div>
-  <noscript><p class="notice error">このページの表示にはJavaScriptが必要です。</p></noscript>
   <section id="fav-section" aria-labelledby="fav-title" hidden>
     <div class="section-head">
       <h2 id="fav-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>お気に入り <span class="count" id="fav-count"></span></h2>
@@ -211,10 +265,35 @@ footer kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospa
     <div id="all-empty"></div>
   </section>
   <p id="loading" class="empty" role="status">読み込み中…</p>
+</div>
+
+<div class="panel" id="panel-repos" role="tabpanel" aria-labelledby="tab-repos" hidden>
+  <div id="repo-notices"></div>
+  <section id="feat-section" aria-labelledby="feat-title" hidden>
+    <div class="section-head">
+      <h2 id="feat-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>代表作品 <span class="count" id="feat-count"></span></h2>
+    </div>
+    <div class="grid feat-grid" id="feat-grid"></div>
+  </section>
+  <section id="repo-section" aria-labelledby="repo-title" hidden>
+    <div class="section-head">
+      <h2 id="repo-title">全リポジトリ <span class="count" id="repo-count" aria-live="polite"></span></h2>
+      <span class="stamp" id="repo-stamp"></span>
+      <div class="chips" id="sort-chips" role="group" aria-label="並び順">
+        <button type="button" class="chip" data-sort="updated" aria-pressed="true">更新が新しい順</button>
+        <button type="button" class="chip" data-sort="name" aria-pressed="false">名前順</button>
+      </div>
+    </div>
+    <div class="grid repo-grid" id="repo-grid"></div>
+    <div id="repo-empty"></div>
+  </section>
+  <p id="repo-loading" class="empty" role="status">読み込み中…</p>
+</div>
 </main>
 
 <footer class="wrap">
-  <span class="kbd-hint"><kbd>/</kbd> 検索 ・ <kbd>Enter</kbd> 先頭を開く ・ <kbd>↓</kbd><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd> カード移動 ・ <kbd>Esc</kbd> 検索を解除</span>
+  <span class="kbd-hint" id="hint-sites"><kbd>/</kbd> 検索 ・ <kbd>Enter</kbd> 先頭を開く ・ <kbd>↓</kbd><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd> カード移動 ・ <kbd>Esc</kbd> 検索を解除 ・ タブ上で <kbd>←</kbd><kbd>→</kbd> 切替</span>
+  <span class="kbd-hint" id="hint-repos" hidden><kbd>/</kbd> 検索 ・ <kbd>Enter</kbd> 先頭をGitHubで開く ・ <kbd>↓</kbd><kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd> カード移動 ・ <kbd>Esc</kbd> 検索を解除 ・ タブ上で <kbd>←</kbd><kbd>→</kbd> 切替</span>
 </footer>
 
 <script>
@@ -244,16 +323,26 @@ const ICONS = {
 };
 const GLYPH_STAR = '<path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/>';
 const GLYPH_REPO = '<path d="M9 7 4 12l5 5M15 7l5 5-5 5"/>';
+const GLYPH_PAGES = ICONS.globe;
+const GLYPH_GITHUB = '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>';
+const REPO_DATA_URL = 'repositories.json';
+const FEATURED_URL = 'featured.json';
 
 const $ = (id) => document.getElementById(id);
 const els = {
   q: $('q'), notices: $('notices'), loading: $('loading'),
   favSection: $('fav-section'), favGrid: $('fav-grid'), favEmpty: $('fav-empty'), favCount: $('fav-count'),
   allSection: $('all-section'), allGrid: $('all-grid'), allEmpty: $('all-empty'), allCount: $('all-count'),
-  allLabel: $('all-label'), chips: $('chips')
+  allLabel: $('all-label'), chips: $('chips'),
+  rq: $('rq'), repoNotices: $('repo-notices'), repoLoading: $('repo-loading'),
+  featSection: $('feat-section'), featGrid: $('feat-grid'), featCount: $('feat-count'),
+  repoSection: $('repo-section'), repoGrid: $('repo-grid'), repoEmpty: $('repo-empty'),
+  repoCount: $('repo-count'), repoStamp: $('repo-stamp'), sortChips: $('sort-chips')
 };
 
 const state = { sites: [], categories: [], favs: new Set(), terms: [], category: null, chipEls: new Map() };
+const rstate = { status: 'idle', repos: [], cards: new Map(), terms: [], sort: 'updated' };
+let sitesReady = Promise.resolve();   // リポジトリ画面が sites.json（Pages リンク・説明の補完）を待つために使う
 
 /* ---------- ユーティリティ ---------- */
 
@@ -572,8 +661,28 @@ function neighbour(from, key) {
   return best;
 }
 
+const activeInput = () => (activeTab === 'repos' ? els.rq : els.q);
+
+function clearActiveQuery() {
+  if (activeTab === 'repos') clearRepoQuery(); else clearQuery();
+}
+
 function initKeys() {
   els.q.addEventListener('input', onQuery);
+  els.rq.addEventListener('input', onRepoQuery);
+  els.rq.addEventListener('keydown', (e) => {
+    if (e.isComposing) return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const first = els.repoGrid.querySelector('.card-link');
+      if (first) window.open(first.href, '_blank', 'noopener,noreferrer');
+    } else if (e.key === 'Escape') { if (els.rq.value) clearRepoQuery(); else els.rq.blur(); }
+    else if (e.key === 'ArrowDown') {
+      // 検索中は検索結果（全リポジトリ）の先頭へ、通常時は画面順で先頭（代表作品）へ
+      const first = (rstate.terms.length ? els.repoGrid : $('panel-repos')).querySelector('.card-link');
+      if (first) { e.preventDefault(); first.focus(); }
+    }
+  });
   els.q.addEventListener('keydown', (e) => {
     if (e.isComposing) return;   // IME変換中のEnter/Escは対象外
     if (e.key === 'Enter') { e.preventDefault(); openFirst(); }
@@ -589,21 +698,301 @@ function initKeys() {
     const typing = t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
     if (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
-      els.q.focus(); els.q.select();
+      const input = activeInput();
+      input.focus(); input.select();
       return;
     }
-    if (e.key === 'Escape' && !typing && els.q.value) { clearQuery(); return; }
+    if (e.key === 'Escape' && !typing && activeInput().value) { clearActiveQuery(); return; }
     if (t instanceof HTMLElement && t.classList.contains('card-link') && e.key.startsWith('Arrow') && !e.altKey && !e.ctrlKey && !e.metaKey) {
       const next = neighbour(t, e.key);
       if (next) { e.preventDefault(); next.focus(); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); els.q.focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); activeInput().focus(); }
     }
   });
 }
 
+/* ---------- タブ ---------- */
+
+const TABS = ['sites', 'repos'];
+const tabEls = Object.fromEntries(TABS.map((k) => [k, {
+  tab: $('tab-' + k), panel: $('panel-' + k), search: $('search-' + k), hint: $('hint-' + k)
+}]));
+const scrollPos = {};
+let activeTab = 'sites';
+
+function selectTab(name, { focus = false } = {}) {
+  if (!TABS.includes(name)) return;
+  if (name !== activeTab) scrollPos[activeTab] = window.scrollY;
+  const changed = name !== activeTab;
+  activeTab = name;
+  for (const [k, t] of Object.entries(tabEls)) {
+    const on = k === name;
+    t.tab.setAttribute('aria-selected', String(on));
+    t.tab.tabIndex = on ? 0 : -1;
+    t.panel.hidden = !on;
+    t.search.hidden = !on;
+    t.hint.hidden = !on;
+  }
+  if (focus) tabEls[name].tab.focus();
+  if (name === 'repos') loadRepos();
+  const hash = name === 'repos' ? '#repos' : '';
+  if (location.hash !== hash) history.replaceState(null, '', location.pathname + location.search + hash);
+  if (changed) window.scrollTo(0, scrollPos[name] || 0);
+}
+
+function initTabs() {
+  for (const k of TABS) {
+    tabEls[k].tab.addEventListener('click', () => selectTab(k));
+    tabEls[k].tab.addEventListener('keydown', (e) => {
+      const i = TABS.indexOf(k);
+      let to = null;
+      if (e.key === 'ArrowRight') to = TABS[(i + 1) % TABS.length];
+      else if (e.key === 'ArrowLeft') to = TABS[(i + TABS.length - 1) % TABS.length];
+      else if (e.key === 'Home') to = TABS[0];
+      else if (e.key === 'End') to = TABS[TABS.length - 1];
+      if (to) { e.preventDefault(); selectTab(to, { focus: true }); }
+    });
+  }
+  window.addEventListener('hashchange', () => selectTab(location.hash === '#repos' ? 'repos' : 'sites'));
+  if (location.hash === '#repos') selectTab('repos');   // 通常の初期表示は「Webサイト」
+}
+
+/* ---------- リポジトリ ---------- */
+
+const jstDate = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' });
+const jstDateTime = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+
+function showRepoError(title, detail, hint, retry) {
+  els.repoLoading.hidden = true;
+  els.featSection.hidden = true;
+  els.repoSection.hidden = true;
+  const box = h('div', { class: 'notice error', role: 'alert' },
+    h('h2', {}, title),
+    detail ? h('p', {}, h('code', {}, detail)) : null,
+    hint ? h('p', {}, hint) : null);
+  if (retry) {
+    const b = h('button', { type: 'button', class: 'btn' }, '再読み込み');
+    b.addEventListener('click', loadRepos);
+    box.append(b);
+  }
+  els.repoNotices.replaceChildren(box);
+}
+
+async function fetchJson(url, { optional = false } = {}) {
+  let res;
+  try { res = await fetch(url, { cache: 'no-cache' }); }
+  catch (e) {
+    const err = new Error(`${url} を取得できませんでした`);
+    err.detail = String(e && e.message || e);
+    err.hint = location.protocol === 'file:'
+      ? 'ファイルを直接開くと読み込めません。ローカルサーバー（例: python3 -m http.server）経由で開いてください。'
+      : 'ネットワーク接続、または公開状態を確認してください。';
+    throw err;
+  }
+  if (!res.ok) {
+    if (optional && res.status === 404) return null;
+    const err = new Error(`${url} を取得できませんでした（HTTP ${res.status}）`);
+    err.detail = new URL(url, location.href).href;
+    err.hint = res.status === 404 && url === REPO_DATA_URL
+      ? 'repositories.json は GitHub Actions が生成します。公開後に Actions の実行（Deploy site）が成功しているか確認してください。ローカルでは node scripts/fetch-repos.mjs で生成できます。'
+      : 'しばらくしてから再読み込みしてください。';
+    throw err;
+  }
+  try { return await res.json(); }
+  catch (e) {
+    const err = new Error(`${url} の JSON 構文が正しくありません`);
+    err.detail = String(e && e.message || e);
+    err.hint = 'ファイルの内容を確認してください。';
+    throw err;
+  }
+}
+
+/* sites.json の repo URL から「リポジトリ名 → サイト定義」を引けるようにする（Pages リンク・説明の補完に使う） */
+function siteIndex(owner) {
+  const map = new Map();
+  for (const s of state.sites) {
+    if (!s.repo) continue;
+    const [o, n] = new URL(s.repo).pathname.split('/').filter(Boolean);
+    if (o && n && o.toLowerCase() === String(owner).toLowerCase()) map.set(n.toLowerCase().replace(/\.git$/, ''), s);
+  }
+  return map;
+}
+
+function validateRepos(data) {
+  if (!data || typeof data !== 'object' || !Array.isArray(data.repositories)) {
+    throw Object.assign(new Error('repositories.json の形式が正しくありません'), { hint: '{ "repositories": [ ... ] } の形式になっていません。' });
+  }
+  const byName = siteIndex(data.owner || 'YanTKYS');
+  const str = (v) => (typeof v === 'string' ? v.trim() : '');
+  const repos = [];
+  for (const r of data.repositories) {
+    const name = r && str(r.name), url = r && safeUrl(r.html_url, { githubOnly: true });
+    if (!name || !url) continue;
+    const site = byName.get(name.toLowerCase());
+    const time = Date.parse(r.pushed_at);
+    const desc = str(r.description) || (site ? site.description : '');
+    repos.push({
+      name, key: name.toLowerCase(), url, description: desc, language: str(r.language),
+      pushedAt: str(r.pushed_at), time: Number.isNaN(time) ? null : time,
+      fork: r.fork === true, archived: r.archived === true,
+      // sites.json に登録済みの公開URLを優先し、なければ Actions が検出した GitHub Pages を使う
+      pages: (site && site.url) || safeUrl(r.pages_url) || null,
+      iconName: site ? site.icon : '',
+      hay: norm(name + ' ' + desc)
+    });
+  }
+  if (!repos.length) throw Object.assign(new Error('repositories.json に表示できるリポジトリがありません'), { hint: 'GitHub Actions の実行結果を確認してください。' });
+  return { repos, generatedAt: str(data.generated_at) };
+}
+
+function repoTile(repo) {
+  const tile = h('span', { class: 'tile', style: `--h:${hueOf(repo.key)}` });
+  if (ICONS[repo.iconName]) tile.append(svg(ICONS[repo.iconName]));
+  else tile.append(Array.from(repo.name).slice(0, 2).join('').toUpperCase());
+  return tile;
+}
+
+function pushedLabel(repo) {
+  if (repo.time == null) return h('span', { class: 'meta' }, 'Push履歴なし');
+  const d = new Date(repo.time);
+  return h('span', { class: 'meta' }, '最終Push ',
+    h('time', { datetime: repo.pushedAt, title: `${jstDateTime.format(d)} JST` }, jstDate.format(d)));
+}
+
+function langLabel(repo) {
+  return repo.language ? h('span', { class: 'meta lang', style: `--h:${hueOf(repo.language)}` }, repo.language) : null;
+}
+
+function badges(repo) {
+  return [
+    repo.fork ? h('span', { class: 'badge' }, 'Fork') : null,
+    repo.archived ? h('span', { class: 'badge archived' }, 'Archived') : null
+  ];
+}
+
+function pagesLink(repo, cls) {
+  return h('a', { class: cls, href: repo.pages, target: '_blank', rel: 'noopener noreferrer',
+    'aria-label': `${repo.name}の公開サイトを開く`, title: '公開サイト（GitHub Pages）' });
+}
+
+function featuredCard(repo) {
+  const gh = h('a', { class: 'pill card-link', href: repo.url, target: '_blank', rel: 'noopener noreferrer',
+    'aria-label': `${repo.name}をGitHubで開く`, title: 'GitHubで開く' }, svg(GLYPH_GITHUB), 'GitHub');
+  const pills = h('div', { class: 'pills' }, gh);
+  if (repo.pages) {
+    const pg = pagesLink(repo, 'pill pages');
+    pg.append(svg(GLYPH_PAGES), '公開サイト');
+    pills.append(pg);
+  }
+  return h('article', { class: 'card featured', 'data-name': repo.name },
+    h('div', { class: 'f-head' }, repoTile(repo), h('h3', { class: 'f-title', title: repo.name }, repo.name)),
+    h('span', { class: 'card-desc', title: repo.description }, repo.description),
+    h('div', { class: 'card-foot' }, badges(repo), langLabel(repo), pushedLabel(repo), pills));
+}
+
+function repoCard(repo) {
+  const actions = h('div', { class: 'actions' });
+  if (repo.pages) {
+    const pg = pagesLink(repo, 'act');
+    pg.append(svg(GLYPH_PAGES));
+    actions.append(pg);
+  }
+  return h('article', { class: 'card repo', 'data-name': repo.name },
+    repoTile(repo),
+    h('a', { class: 'card-link', href: repo.url, target: '_blank', rel: 'noopener noreferrer', title: repo.name }, repo.name),
+    h('span', { class: 'card-desc', title: repo.description }, repo.description),
+    h('div', { class: 'repo-meta' }, badges(repo), langLabel(repo), pushedLabel(repo)),
+    actions);
+}
+
+/* 更新が新しい順（pushed_at の降順。同時刻は名前順、日時なしは末尾）／名前順 */
+function sortRepos(list, mode) {
+  const byName = (a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
+  const sorted = [...list];
+  if (mode === 'name') return sorted.sort(byName);
+  return sorted.sort((a, b) => {
+    if (a.time == null || b.time == null) return a.time == null && b.time == null ? byName(a, b) : a.time == null ? 1 : -1;
+    return b.time - a.time || byName(a, b);
+  });
+}
+
+function renderRepos() {
+  const searching = rstate.terms.length > 0;
+  const query = els.rq.value.trim();
+  const list = sortRepos(rstate.repos.filter((r) => rstate.terms.every((t) => r.hay.includes(t))), rstate.sort);
+  els.repoCount.textContent = searching ? `${list.length} / ${rstate.repos.length}件` : `${list.length}件`;
+  els.repoGrid.replaceChildren(...list.map((r) => rstate.cards.get(r.key)));
+  els.sortChips.querySelectorAll('[data-sort]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sort === rstate.sort)));
+  if (list.length) els.repoEmpty.replaceChildren();
+  else els.repoEmpty.replaceChildren(emptyBox(`「${query}」に一致するリポジトリはありません。名前や説明文の別のキーワードをお試しください。`,
+    { label: '検索を解除', onClick: () => { clearRepoQuery(); els.rq.focus(); } }));
+}
+
+function onRepoQuery() {
+  rstate.terms = norm(els.rq.value).split(/\s+/).filter(Boolean);
+  renderRepos();
+}
+
+function clearRepoQuery() {
+  els.rq.value = '';
+  onRepoQuery();
+}
+
+async function loadRepos() {
+  if (rstate.status === 'loading' || rstate.status === 'ready') return;
+  rstate.status = 'loading';
+  els.repoNotices.replaceChildren();
+  els.repoLoading.hidden = false;
+  let repoData, featData, featError = null;
+  try {
+    [repoData, featData] = await Promise.all([
+      fetchJson(REPO_DATA_URL),
+      fetchJson(FEATURED_URL, { optional: true }).catch((e) => { featError = e; return null; }),
+      sitesReady
+    ]);
+  } catch (e) {
+    rstate.status = 'idle';
+    return showRepoError(e.message, e.detail, e.hint, true);
+  }
+  let parsed;
+  try { parsed = validateRepos(repoData); }
+  catch (e) { rstate.status = 'idle'; return showRepoError(e.message, e.detail, e.hint, true); }
+
+  rstate.repos = parsed.repos;
+  rstate.cards = new Map(parsed.repos.map((r) => [r.key, repoCard(r)]));
+
+  /* 代表作品: featured.json の並び順どおり。説明・リンクは取得済みのリポジトリ情報を使う */
+  const notes = [];
+  if (featError) notes.push(['代表作品の設定（featured.json）を読み込めませんでした', [featError.message + (featError.detail ? `: ${featError.detail}` : '')]]);
+  const names = featData && Array.isArray(featData.featured) ? featData.featured.filter((n) => typeof n === 'string' && n.trim()) : [];
+  if (featData && !Array.isArray(featData.featured)) notes.push(['featured.json の形式が正しくありません', ['{ "featured": ["リポジトリ名", ...] } の形式にしてください。']]);
+  const byKey = new Map(parsed.repos.map((r) => [r.key, r]));
+  const seen = new Set(), picked = [], missing = [];
+  for (const n of names) {
+    const r = byKey.get(n.trim().toLowerCase());
+    if (!r) missing.push(n); else if (!seen.has(r.key)) { seen.add(r.key); picked.push(r); }
+  }
+  if (missing.length) notes.push([`代表作品に指定された${missing.length}件は公開リポジトリに見つかりません（表示を省略）`, missing]);
+  els.repoNotices.replaceChildren(...notes.map(([t, items]) => h('details', { class: 'notice' }, h('summary', {}, t), h('ul', {}, items.map((i) => h('li', {}, i))))));
+  els.featGrid.replaceChildren(...picked.map(featuredCard));
+  els.featCount.textContent = picked.length ? `${picked.length}` : '';
+  els.featSection.hidden = !picked.length;
+
+  if (parsed.generatedAt && !Number.isNaN(Date.parse(parsed.generatedAt))) {
+    els.repoStamp.textContent = `データ取得 ${jstDateTime.format(new Date(parsed.generatedAt))} JST`;
+  }
+  els.sortChips.querySelectorAll('[data-sort]').forEach((b) => b.addEventListener('click', () => { rstate.sort = b.dataset.sort; renderRepos(); }));
+  els.repoLoading.hidden = true;
+  els.repoSection.hidden = false;
+  rstate.status = 'ready';
+  renderRepos();
+  if (els.rq.value) onRepoQuery();   // ブラウザが復元した入力値を反映
+}
+
 initTheme();
 initKeys();
-load();
+sitesReady = load();
+initTabs();
 })();
 </script>
 </body>
