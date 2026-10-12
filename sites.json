@@ -41,6 +41,16 @@
       "favorite": false
     },
     {
+      "id": "devlog",
+      "name": "devlog",
+      "description": "複数リポジトリの開発記録を集約して見られるログビューア",
+      "url": "https://yantkys.github.io/devlog/",
+      "repo": "https://github.com/YanTKYS/devlog",
+      "category": "タスク・記録",
+      "icon": "calendar",
+      "favorite": false
+    },
+    {
       "id": "news-watch",
       "name": "news-watch",
       "description": "自治体DX・生成AI活用の新着情報ログ",
