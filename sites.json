@@ -149,6 +149,16 @@
       "category": "ツール",
       "icon": "chart",
       "favorite": false
+    },
+    {
+      "id": "design-lab",
+      "name": "design-lab",
+      "description": "同じ画面を複数のデザイン方針で比較できる実験サイト",
+      "url": "https://yantkys.github.io/design-lab/",
+      "repo": "https://github.com/YanTKYS/design-lab",
+      "category": "ツール",
+      "icon": "compass",
+      "favorite": false
     }
   ]
 }
