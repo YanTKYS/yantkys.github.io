@@ -159,6 +159,16 @@
       "category": "ツール",
       "icon": "compass",
       "favorite": false
+    },
+    {
+      "id": "okinawa-dx-report",
+      "name": "沖縄県内11市 DX推進体制比較",
+      "description": "沖縄県内11市のDX推進体制や取組状況を比較・分析するレポート",
+      "url": "https://yantkys.github.io/okinawa-dx-report/",
+      "repo": "https://github.com/YanTKYS/okinawa-dx-report",
+      "category": "ナレッジ",
+      "icon": "chart",
+      "favorite": false
     }
   ]
 }
