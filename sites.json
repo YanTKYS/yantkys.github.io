@@ -61,6 +61,16 @@
       "favorite": true
     },
     {
+      "id": "ai-watch",
+      "name": "ai-watch",
+      "description": "生成AI・AIコーディング・エージェント・MCPなどの最新情報を収集・検索するサイト",
+      "url": "https://yantkys.github.io/ai-watch/",
+      "repo": "https://github.com/YanTKYS/ai-watch",
+      "category": "情報収集",
+      "icon": "news",
+      "favorite": false
+    },
+    {
       "id": "markdown-library",
       "name": "Markdown Library",
       "description": "庁内向けMarkdownナレッジの検索・コピー",
