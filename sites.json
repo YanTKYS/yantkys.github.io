@@ -179,6 +179,16 @@
       "category": "ナレッジ",
       "icon": "chart",
       "favorite": false
+    },
+    {
+      "id": "editor",
+      "name": "editor",
+      "description": "タブ・分割ペイン・差分比較に対応したブラウザベースのテキストエディタ",
+      "url": "https://yantkys.github.io/editor/",
+      "repo": "https://github.com/YanTKYS/editor",
+      "category": "ツール",
+      "icon": "code",
+      "favorite": false
     }
   ]
 }
