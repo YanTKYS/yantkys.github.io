@@ -189,6 +189,16 @@
       "category": "ツール",
       "icon": "code",
       "favorite": false
+    },
+    {
+      "id": "poc-lab",
+      "name": "PoC Lab",
+      "description": "PeleとMermaid.jsの比較など、技術検証の結果を閲覧・比較するサイト",
+      "url": "https://yantkys.github.io/poc-lab/",
+      "repo": "https://github.com/YanTKYS/poc-lab",
+      "category": "ツール",
+      "icon": "tool",
+      "favorite": false
     }
   ]
 }
