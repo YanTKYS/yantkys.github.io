@@ -71,6 +71,16 @@
       "favorite": false
     },
     {
+      "id": "okinawa-watch",
+      "name": "okinawa-watch",
+      "description": "沖縄のローカルニュースやお得情報、身近な発見を収集するサイト",
+      "url": "https://yantkys.github.io/okinawa-watch/",
+      "repo": "https://github.com/YanTKYS/okinawa-watch",
+      "category": "情報収集",
+      "icon": "news",
+      "favorite": false
+    },
+    {
       "id": "markdown-library",
       "name": "Markdown Library",
       "description": "庁内向けMarkdownナレッジの検索・コピー",
